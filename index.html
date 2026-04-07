@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ca">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benvinguda - EcoMètrica Green IT</title>
+    <style>
+        /* CSS INTEGRAT I LLEUGER (Green IT Principis) */
+
+        /* 1. Paleta de colors fosc per defecte (Estalvi energètic en OLED) */
+        :root {
+            --bg-color: #0B1121;
+            /* Blau nit profund (Fons principal) */
+            --panel-color: #151E32;
+            /* Blau fosc (Fons del panell d'accés) */
+            --text-color: #F8FAFC;
+            /* Blanc trencat (Text principal, menys fatiga visual) */
+            --text-muted: #94A3B8;
+            /* Gris (Subtítols i placeholders) */
+
+            --eco-green: #10B981;
+            /* Verd Maragda (Identitat i accents positius) */
+            --eco-cyan: #06B6D4;
+            /* Blau Cian (Dades i accents tecnològics) */
+            --border-color: rgba(16, 185, 129, 0.2);
+            /* Verd tènue per a vores */
+        }
+
+        /* 2. Tipografia de sistema (Evita descarregar fonts externes pesades) */
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Contenidor central */
+        .main-container {
+            max-width: 600px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 3. Logotip SVG integrat (Pes < 1KB, escalabilitat perfecta) */
+        .logo-container {
+            width: 100%;
+            max-width: 280px;
+            margin-bottom: 30px;
+        }
+
+        /* Títols */
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            line-height: 1.2;
+        }
+
+        h1 strong {
+            color: var(--eco-green);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin: 0 0 40px 0;
+            font-weight: 400;
+        }
+
+        /* 4. Panell d'Accés (Minimalista i eficient) */
+        .login-panel {
+            background-color: var(--panel-color);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px;
+            width: 100%;
+            box-sizing: border-box;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-panel h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 0 0 30px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Estils del formulari */
+        .form-group {
+            width: 100%;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--eco-cyan);
+        }
+
+        /* 5. Botó d'Acció amb Degradat Sostenible */
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 30px;
+            /* Arrodonit segons disseny */
+            background: linear-gradient(135deg, var(--eco-green) 0%, var(--eco-cyan) 100%);
+            color: #0B1121;
+            /* Text fosc sobre fons clar per a contrast */
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: opacity 0.2s ease, transform 0.1s ease;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            opacity: 0.9;
+        }
+
+        .btn-login:active {
+            transform: scale(0.98);
+        }
+
+        /* Enllaç oblidat */
+        .forgot-password {
+            display: block;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .forgot-password:hover {
+            color: var(--eco-cyan);
+        }
+
+        /* Peu de pàgina */
+        footer {
+            margin-top: 50px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-container">
+
+        <div class="logo-container">
+            <svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                <g transform="translate(10, 20)">
+                    <path d="M 0 60 C 0 60 0 0 30 0 C 60 0 60 60 30 60 Z" fill="#10B981" opacity="0.9" />
+                    <path d="M 30 60 A 30 30 0 1 1 60 30" fill="none" stroke="#06B6D4" stroke-width="4"
+                        stroke-linecap="round" />
+                    <path d="M 12 45 L 25 30 L 35 38 L 50 15" fill="none" stroke="#FFFFFF" stroke-width="4"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                    <circle cx="50" cy="15" r="4" fill="#FFFFFF" />
+                </g>
+                <text x="85" y="65" font-family="Arial, sans-serif" font-size="38" font-weight="800" fill="#10B981">
+                    Eco<tspan fill="#F8FAFC" font-weight="300">Mètrica</tspan>
+                </text>
+            </svg>
+        </div>
+
+        <h1>Benvingut al portal de seguiment de <strong>Green IT</strong> d'EcoMètrica.</h1>
+        <p class="subtitle">Eina integral per a l'avaluació de la sostenibilitat empresarial.</p>
+
+        <div class="login-panel">
+            <h2>Dades d'Accés</h2>
+            <form onsubmit="window.location.href='dashboard.html'; return false;">
+                <div class="form-group">
+                    <label class="form-label" for="username">Usuari / Correu</label>
+                    <input class="form-control" type="text" id="username" name="username"
+                        placeholder="exemple@empresa.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="password">Contrasenya</label>
+                    <input class="form-control" type="password" id="password" name="password" placeholder="••••••••">
+                </div>
+
+                <button class="btn-login" type="submit">Iniciar Sessió</button>
+            </form>
+            <a href="#" class="forgot-password">Heu oblidat la contrasenya?</a>
+        </div>
+
+        <footer>
+            Un projecte de Pau, Iker, Sarai, Widad. Desenvolupat amb principis d'Ecodisseny.
+        </footer>
+
+    </div>
+
+</body>
+
+</html>

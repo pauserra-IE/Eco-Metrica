@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ca">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuració - EcoMètrica</title>
+    <style>
+        /* VARIABLES I ESTILS BASE (Ara preparats per canviar de tema!) */
+        :root {
+            /* TEMA FOSC (Per defecte - Green IT) */
+            --bg-color: #0B1121;
+            --panel-color: #151E32;
+            --text-color: #F8FAFC;
+            --text-muted: #94A3B8;
+            --eco-green: #10B981;
+            --eco-cyan: #06B6D4;
+            --border-color: rgba(255, 255, 255, 0.05);
+            --switch-bg: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Variables que s'activen quan el body té la classe "light-mode" */
+        body.light-mode {
+            --bg-color: #F1F5F9;
+            --panel-color: #FFFFFF;
+            --text-color: #0F172A;
+            --text-muted: #64748B;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --switch-bg: rgba(0, 0, 0, 0.2);
+        }
+
+        /* Transició suau per quan canviem de color */
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* BARRA LATERAL (Sidebar) */
+        .sidebar {
+            width: 260px;
+            background-color: var(--panel-color);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 40px;
+            text-decoration: none;
+        }
+
+        .logo svg {
+            height: 40px;
+            width: auto;
+        }
+
+        .logo span {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--eco-green);
+        }
+
+        .logo span span {
+            color: var(--text-color);
+            font-weight: 300;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .nav-links li a {
+            display: block;
+            padding: 12px 15px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-links li a:hover {
+            background-color: rgba(128, 128, 128, 0.1);
+            color: var(--text-color);
+        }
+
+        .nav-links li a.active {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--eco-green);
+            border-left: 4px solid var(--eco-green);
+        }
+
+        /* CONTINGUT PRINCIPAL */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        /* PANELLS DE CONFIGURACIÓ */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .panel {
+            background-color: var(--panel-color);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .panel h2 {
+            margin: 0 0 20px 0;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        /* FILA D'OPCIÓ AMB INTERRUPTOR (Toggle) */
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(128, 128, 128, 0.1);
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .setting-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 1rem;
+            color: var(--text-color);
+        }
+
+        .setting-info p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            max-width: 250px;
+            line-height: 1.4;
+        }
+
+        /* INTERRUPTOR (Toggle Switch) pur CSS */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--switch-bg);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--eco-green);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(24px);
+        }
+
+        /* Selectors per a opcions desplegables */
+        select.eco-select {
+            background-color: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: 6px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        select.eco-select option {
+            background-color: var(--panel-color);
+            color: var(--text-color);
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <a href="dashboard.html" class="logo">
+            <svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+                <g transform="translate(10, 20)">
+                    <path d="M 0 60 C 0 60 0 0 30 0 C 60 0 60 60 30 60 Z" fill="#10B981" opacity="0.9" />
+                    <path d="M 30 60 A 30 30 0 1 1 60 30" fill="none" stroke="#06B6D4" stroke-width="4"
+                        stroke-linecap="round" />
+                    <path d="M 12 45 L 25 30 L 35 38 L 50 15" fill="none" stroke="#FFFFFF" stroke-width="4"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                    <circle cx="50" cy="15" r="4" fill="#FFFFFF" />
+                </g>
+                <text x="85" y="65" font-family="Arial, sans-serif" font-size="38" font-weight="800" fill="#10B981">
+                    Eco<tspan fill="#F8FAFC" font-weight="300">Mètrica</tspan>
+                </text>
+            </svg>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="dashboard.html">Resum Dashboard</a></li>
+            <li><a href="analisi.html">Anàlisi i Comparativa</a></li>
+            <li><a href="informes_sostenibles.html">Informes Sostenibles</a></li>
+            <li><a href="configuracio.html" class="active">Configuració</a></li>
+        </ul>
+
+        <button onclick="window.location.href='index.html'"
+            style="margin-top: auto; padding: 12px; background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 8px; cursor: pointer; transition: 0.2s;">Tancar
+            Sessió</button>
+    </aside>
+
+    <main class="main-content">
+        <header>
+            <h1>Preferències del Sistema</h1>
+            <div style="color: var(--text-muted); font-size: 0.9rem;">
+                Ajustos de l'usuari i optimització
+            </div>
+        </header>
+
+        <div class="settings-grid">
+
+            <div class="panel">
+                <h2>🎨 Aparença i Ecodisseny</h2>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <h3>Mode Fosc (OLED Save)</h3>
+                        <p>Redueix l'emissió de llum dels píxels, estalviant fins a un 40% de bateria en pantalles
+                            compatibles.</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="themeToggle" checked onchange="toggleTheme()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <h3>Animacions de la Interfície</h3>
+                        <p>Desactivar les animacions redueix el consum de CPU/GPU del teu navegador.</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>🔄 Xarxa i Sincronització</h2>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <h3>Freqüència d'Actualització</h3>
+                        <p>Cada quant temps l'app demana dades al servidor (Green Coding).</p>
+                    </div>
+                    <select class="eco-select">
+                        <option>En Temps Real (Alt Consum)</option>
+                        <option>Cada 5 minuts</option>
+                        <option selected>Cada 30 minuts (Òptim 🌿)</option>
+                        <option>Només Manualment</option>
+                    </select>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <h3>Descarregar Gràfics Pre-renderitzats</h3>
+                        <p>Evita fer càlculs complexos al teu dispositiu i els demana processats al servidor.</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>🔔 Notificacions i Alertes</h2>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <h3>Alertes de Consum Anòmal</h3>
+                        <p>Notifica si un servidor de l'empresa gasta més energia del normal.</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <h3>Resum Setmanal per Correu</h3>
+                        <p>Rebre un informe de text pla (sense imatges) amb els KPIs de sostenibilitat.</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const toggle = document.getElementById('themeToggle');
+            const logoCircle = document.getElementById('logo-circle');
+
+            // Si el checkbox NO està marcat, estem en mode clar
+            if (!toggle.checked) {
+                body.classList.add('light-mode');
+                // Canviem l'ombra del logotip perquè es vegi bé en blanc
+                if (logoCircle) logoCircle.setAttribute('fill', '#E2E8F0');
+            } else {
+                // Si està marcat, tornem al mode fosc
+                body.classList.remove('light-mode');
+                if (logoCircle) logoCircle.setAttribute('fill', '#0B1121');
+            }
+        }
+    </script>
+</body>
+
+</html>

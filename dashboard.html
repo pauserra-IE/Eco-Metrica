@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ca">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - EcoMètrica</title>
+    <style>
+        /* VARIABLES I ESTILS BASE (Mateix Brand Kit per coherència i estalvi de codi) */
+        :root {
+            --bg-color: #0B1121;
+            --panel-color: #151E32;
+            --text-color: #F8FAFC;
+            --text-muted: #94A3B8;
+            --eco-green: #10B981;
+            --eco-cyan: #06B6D4;
+            --alert-red: #EF4444;
+            --border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* BARRA LATERAL (Sidebar) */
+        .sidebar {
+            width: 260px;
+            background-color: var(--panel-color);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 40px;
+            text-decoration: none;
+        }
+
+        .logo svg {
+            height: 40px;
+            width: auto;
+        }
+
+        .logo span {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--eco-green);
+        }
+
+        .logo span span {
+            color: var(--text-color);
+            font-weight: 300;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .nav-links li a {
+            display: block;
+            padding: 12px 15px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-links li a:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+        }
+
+        .nav-links li a.active {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--eco-green);
+            border-left: 4px solid var(--eco-green);
+        }
+
+        .logout-btn {
+            margin-top: auto;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .logout-btn:hover {
+            border-color: var(--alert-red);
+            color: var(--alert-red);
+        }
+
+        /* CONTINGUT PRINCIPAL */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        /* TARGETES KPI (Dades clau) */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .kpi-card {
+            background-color: var(--panel-color);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .kpi-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin: 0 0 5px 0;
+        }
+
+        .kpi-trend {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .trend-good {
+            color: var(--eco-green);
+        }
+
+        .trend-bad {
+            color: var(--alert-red);
+        }
+
+        /* GRÀFICS I ALERTES */
+        .dashboard-bottom {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .chart-container,
+        .alerts-container {
+            background-color: var(--panel-color);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-container h3,
+        .alerts-container h3 {
+            margin: 0 0 20px 0;
+            font-size: 1.1rem;
+            color: var(--text-color);
+        }
+
+        /* Placeholder per al canvas del gràfic */
+        .chart-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px dashed var(--border-color);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Llista d'alertes */
+        .alert-item {
+            padding: 12px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.02);
+            margin-bottom: 10px;
+            border-left: 4px solid var(--eco-cyan);
+            font-size: 0.9rem;
+        }
+
+        .alert-item.warning {
+            border-left-color: #F59E0B;
+        }
+
+        .alert-item.critical {
+            border-left-color: var(--alert-red);
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <a href="index.html" class="logo">
+            <svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+                <g transform="translate(10, 20)">
+                    <path d="M 0 60 C 0 60 0 0 30 0 C 60 0 60 60 30 60 Z" fill="#10B981" opacity="0.9" />
+                    <path d="M 30 60 A 30 30 0 1 1 60 30" fill="none" stroke="#06B6D4" stroke-width="4"
+                        stroke-linecap="round" />
+                    <path d="M 12 45 L 25 30 L 35 38 L 50 15" fill="none" stroke="#FFFFFF" stroke-width="4"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                    <circle cx="50" cy="15" r="4" fill="#FFFFFF" />
+                </g>
+                <text x="85" y="65" font-family="Arial, sans-serif" font-size="38" font-weight="800" fill="#10B981">
+                    Eco<tspan fill="#F8FAFC" font-weight="300">Mètrica</tspan>
+                </text>
+            </svg>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="dashboard.html" class="active">Resum Dashboard</a></li>
+            <li><a href="analisi.html">Anàlisi i Comparativa</a></li>
+            <li><a href="informes_sostenibles.html">Informes Sostenibles</a></li>
+            <li><a href="configuracio.html">Configuració</a></li>
+        </ul>
+
+        <button class="logout-btn" onclick="window.location.href='index.html'">Tancar Sessió</button>
+    </aside>
+
+    <main class="main-content">
+        <header>
+            <h1>Monitorització de Sostenibilitat</h1>
+            <div style="color: var(--text-muted); font-size: 0.9rem;">
+                Darrera actualització: Ara mateix
+            </div>
+        </header>
+
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <h3>Petjada de Carboni (Mes)</h3>
+                <p class="kpi-value" id="kpi-co2">2.4 tCO₂</p>
+                <div class="kpi-trend trend-good">↓ 12% respecte al mes passat</div>
+            </div>
+            <div class="kpi-card">
+                <h3>Consum Elèctric Servidors</h3>
+                <p class="kpi-value" id="kpi-energy">4,250 kWh</p>
+                <div class="kpi-trend trend-good">↓ 5% optimització de codi</div>
+            </div>
+            <div class="kpi-card">
+                <h3>Índex Reciclatge RAEE</h3>
+                <p class="kpi-value" id="kpi-recycle">85%</p>
+                <div class="kpi-trend trend-bad">↑ Falta gestionar nous equips</div>
+            </div>
+            <div class="kpi-card">
+                <h3>Aigua Estalviada (Refrigeració)</h3>
+                <p class="kpi-value" id="kpi-water">1,200 L</p>
+                <div class="kpi-trend trend-good">↑ 8% ús d'aire lliure (Free cooling)</div>
+            </div>
+        </div>
+
+        <div class="dashboard-bottom">
+            <div class="chart-container">
+                <h3>Evolució de l'Eficiència Energètica (PUE)</h3>
+                <div class="chart-area" id="main-chart-container">
+                    [Espai reservat per al gràfic dinàmic amb JavaScript]
+                </div>
+            </div>
+
+            <div class="alerts-container">
+                <h3>Alertes del Sistema</h3>
+                <div class="alert-item warning">
+                    <strong>Avís:</strong> Consum inusual al Rack #4 del Centre de Dades.
+                </div>
+                <div class="alert-item">
+                    <strong>Info:</strong> S'ha assolit l'objectiu de reducció de plàstics d'aquest trimestre.
+                </div>
+                <div class="alert-item critical">
+                    <strong>Acció requerida:</strong> 5 ordinadors portàtils antics pendents de traslladar a la planta
+                    de reciclatge RAEE.
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        // --- 1. GREEN CODING: Gràfic lleuger amb Canvas Natiu (0 dependències externes) ---
+        function drawChart() {
+            const container = document.getElementById('main-chart-container');
+            container.innerHTML = '<canvas id="pueChart" width="100%" height="100%"></canvas>';
+
+            const canvas = document.getElementById('pueChart');
+            // Ajustem la mida del canvas al seu contenidor
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight || 250;
+
+            const ctx = canvas.getContext('2d');
+
+            // Dades simulades: PUE (Power Usage Effectiveness). Com més a prop d'1.0, millor.
+            const months = ['Gen', 'Feb', 'Mar', 'Abr', 'Mai', 'Jun'];
+            const pueData = [1.60, 1.55, 1.48, 1.42, 1.35, 1.25]; // Tendència de millora
+
+            const padding = 30;
+            const width = canvas.width - padding * 2;
+            const height = canvas.height - padding * 2;
+
+            // Cercar valors màxims i mínims per escalar el gràfic
+            const maxPUE = Math.max(...pueData) + 0.1;
+            const minPUE = 1.0; // PUE ideal
+
+            // Dibuixar la línia del gràfic
+            ctx.beginPath();
+            ctx.strokeStyle = '#06B6D4'; // Blau Cian (Color Brand)
+            ctx.lineWidth = 3;
+            ctx.lineJoin = 'round';
+
+            pueData.forEach((value, index) => {
+                const x = padding + (index * (width / (months.length - 1)));
+                // Invertim la Y perquè el canvas comença a dalt a l'esquerra (0,0)
+                const y = padding + height - ((value - minPUE) / (maxPUE - minPUE) * height);
+
+                if (index === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+
+            // Dibuixar els punts i les etiquetes
+            pueData.forEach((value, index) => {
+                const x = padding + (index * (width / (months.length - 1)));
+                const y = padding + height - ((value - minPUE) / (maxPUE - minPUE) * height);
+
+                // Punts verds
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
+                ctx.fillStyle = '#10B981'; // Verd Maragda
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#0B1121'; // Fons fosc
+                ctx.stroke();
+
+                // Etiquetes dels mesos a l'eix X
+                ctx.fillStyle = '#94A3B8';
+                ctx.font = '12px system-ui';
+                ctx.textAlign = 'center';
+                ctx.fillText(months[index], x, canvas.height - 5);
+
+                // Mostrar valor PUE a sobre de cada punt
+                ctx.fillStyle = '#F8FAFC';
+                ctx.fillText(value.toFixed(2), x, y - 15);
+            });
+        }
+
+        // --- 2. SIMULACIÓ EN TEMPS REAL: Variació mínima de dades per donar vida ---
+        function simulateRealTimeData() {
+            const energyEl = document.getElementById('kpi-energy');
+            const waterEl = document.getElementById('kpi-water');
+
+            // Dades base
+            let baseEnergy = 4250;
+            let baseWater = 1200;
+
+            // Actualitzem cada 3 segons per simular que mesurem sensors en directe
+            setInterval(() => {
+                // Afegim una variació aleatòria entre -5 i +5
+                const currentEnergy = baseEnergy + Math.floor(Math.random() * 11) - 5;
+                const currentWater = baseWater + Math.floor(Math.random() * 5) - 2;
+
+                // Formategem els números
+                energyEl.innerText = currentEnergy.toLocaleString() + ' kWh';
+                waterEl.innerText = currentWater.toLocaleString() + ' L';
+            }, 3000);
+        }
+
+        // Executar les funcions quan la pàgina s'hagi carregat completament
+        window.addEventListener('load', () => {
+            drawChart();
+            simulateRealTimeData();
+        });
+
+        // Redibuixar el gràfic si es canvia la mida de la finestra (Responsive design)
+        window.addEventListener('resize', () => {
+            drawChart();
+        });
+    </script>
+</body>
+
+</html>

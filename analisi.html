@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ca">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anàlisi i Comparativa - EcoMètrica</title>
+    <style>
+        /* VARIABLES I ESTILS BASE (Els mateixos que al dashboard) */
+        :root {
+            --bg-color: #0B1121;
+            --panel-color: #151E32;
+            --text-color: #F8FAFC;
+            --text-muted: #94A3B8;
+            --eco-green: #10B981;
+            --eco-cyan: #06B6D4;
+            --alert-red: #EF4444;
+            --border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* BARRA LATERAL (Sidebar) - Idèntica per mantenir la navegació */
+        .sidebar {
+            width: 260px;
+            background-color: var(--panel-color);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 40px;
+            text-decoration: none;
+        }
+
+        .logo svg {
+            height: 40px;
+            width: auto;
+        }
+
+        .logo span {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--eco-green);
+        }
+
+        .logo span span {
+            color: var(--text-color);
+            font-weight: 300;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .nav-links li a {
+            display: block;
+            padding: 12px 15px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-links li a:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+        }
+
+        .nav-links li a.active {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--eco-green);
+            border-left: 4px solid var(--eco-green);
+        }
+
+        /* CONTINGUT PRINCIPAL */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        /* BARRA DE FILTRES (Per a la comparativa) */
+        .filters-bar {
+            background-color: var(--panel-color);
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .filters-bar select,
+        .filters-bar button {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .filters-bar button {
+            background-color: var(--eco-green);
+            color: #0B1121;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: 0.2s;
+        }
+
+        .filters-bar button:hover {
+            opacity: 0.9;
+        }
+
+        /* QUADRÍCULA DE GRÀFICS */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .chart-box {
+            background-color: var(--panel-color);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-box h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.1rem;
+        }
+
+        .canvas-container {
+            width: 100%;
+            height: 250px;
+            position: relative;
+        }
+
+        /* TAULA DE DADES DETALLADA */
+        .data-table-container {
+            background-color: var(--panel-color);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        td {
+            font-size: 0.95rem;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-green {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--eco-green);
+        }
+
+        .badge-cyan {
+            background-color: rgba(6, 182, 212, 0.2);
+            color: var(--eco-cyan);
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <a href="index.html" class="logo">
+            <svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+                <g transform="translate(10, 20)">
+                    <path d="M 0 60 C 0 60 0 0 30 0 C 60 0 60 60 30 60 Z" fill="#10B981" opacity="0.9" />
+                    <path d="M 30 60 A 30 30 0 1 1 60 30" fill="none" stroke="#06B6D4" stroke-width="4"
+                        stroke-linecap="round" />
+                    <path d="M 12 45 L 25 30 L 35 38 L 50 15" fill="none" stroke="#FFFFFF" stroke-width="4"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                    <circle cx="50" cy="15" r="4" fill="#FFFFFF" />
+                </g>
+                <text x="85" y="65" font-family="Arial, sans-serif" font-size="38" font-weight="800" fill="#10B981">
+                    Eco<tspan fill="#F8FAFC" font-weight="300">Mètrica</tspan>
+                </text>
+            </svg>
+        </a>
+        <ul class="nav-links">
+            <li><a href="dashboard.html">Resum Dashboard</a></li>
+            <li><a href="analisi.html" class="active">Anàlisi i Comparativa</a></li>
+            <li><a href="informes_sostenibles.html">Informes Sostenibles</a></li>
+            <li><a href="configuracio.html">Configuració</a></li>
+        </ul>
+
+        <button onclick="window.location.href='index.html'"
+            style="margin-top: auto; padding: 12px; background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 8px; cursor: pointer; transition: 0.2s;">Tancar
+            Sessió</button>
+    </aside>
+
+    <main class="main-content">
+        <header>
+            <h1>Anàlisi de Tendències</h1>
+            <div style="color: var(--text-muted); font-size: 0.9rem;">
+                Dades consolidades del darrer exercici
+            </div>
+        </header>
+
+        <div class="filters-bar">
+            <span style="color: var(--text-muted); font-size: 0.9rem;">Comparar:</span>
+            <select>
+                <option>Any 2025</option>
+                <option>Any 2024</option>
+            </select>
+            <span style="color: var(--text-muted); font-size: 0.9rem;">vs</span>
+            <select>
+                <option>Any 2026 (Actual)</option>
+                <option>Any 2025</option>
+            </select>
+            <button onclick="alert('Dades actualitzades!')">Aplicar Filtres</button>
+        </div>
+
+        <div class="charts-grid">
+            <div class="chart-box">
+                <h3>Comparativa d'Emissions CO₂ (Tones per Trimestre)</h3>
+                <div class="canvas-container">
+                    <canvas id="barChart"></canvas>
+                </div>
+                <div style="display: flex; gap: 15px; justify-content: center; margin-top: 10px; font-size: 0.85rem;">
+                    <span style="color: var(--text-muted);"><span
+                            style="display:inline-block; width:10px; height:10px; background:#06B6D4; margin-right:5px; border-radius:2px;"></span>
+                        Any Anterior</span>
+                    <span style="color: var(--text-muted);"><span
+                            style="display:inline-block; width:10px; height:10px; background:#10B981; margin-right:5px; border-radius:2px;"></span>
+                        Any Actual</span>
+                </div>
+            </div>
+
+            <div class="chart-box">
+                <h3>Mix Energètic dels Servidors</h3>
+                <div class="canvas-container">
+                    <canvas id="doughnutChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="data-table-container">
+            <h3>Detall d'Accions d'Economia Circular</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Departament</th>
+                        <th>Acció Sostenible</th>
+                        <th>Impacte (Estalvi)</th>
+                        <th>Estat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Infraestructura (CPD)</td>
+                        <td>Virtualització de servidors físics</td>
+                        <td>-45% Consum Elèctric</td>
+                        <td><span class="badge badge-green">Completat</span></td>
+                    </tr>
+                    <tr>
+                        <td>Desenvolupament</td>
+                        <td>Optimització de codi (Green Coding)</td>
+                        <td>-12% Ús de CPU en Cloud</td>
+                        <td><span class="badge badge-cyan">En procés</span></td>
+                    </tr>
+                    <tr>
+                        <td>Sistemes / IT</td>
+                        <td>Renovació d'equips (Gestió RAEE)</td>
+                        <td>250 kg de maquinari reciclat</td>
+                        <td><span class="badge badge-green">Completat</span></td>
+                    </tr>
+                    <tr>
+                        <td>Operacions</td>
+                        <td>Migració a un Green Data Center</td>
+                        <td>PUE reduït de 1.8 a 1.2</td>
+                        <td><span class="badge badge-cyan">En procés</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        // Funció per dibuixar el gràfic de barres comparatiu
+        function drawBarChart() {
+            const canvas = document.getElementById('barChart');
+            const ctx = canvas.getContext('2d');
+
+            // Ajustar mida al contenidor
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+
+            const w = canvas.width;
+            const h = canvas.height;
+            const padding = 20;
+
+            // Dades simulades (Q1, Q2, Q3, Q4)
+            const prevYear = [12, 14, 15, 13]; // Blau Cian
+            const currYear = [9, 10, 11, 8];   // Verd (S'aprecia la reducció)
+            const labels = ['Q1', 'Q2', 'Q3', 'Q4'];
+
+            const maxVal = 16;
+            const barWidth = (w - padding * 2) / 10; // Amplada de la barra
+            const gap = barWidth * 2.5; // Espai entre grups (trimestres)
+
+            ctx.clearRect(0, 0, w, h);
+
+            for (let i = 0; i < 4; i++) {
+                const xBase = padding + (i * gap) + (w / 8);
+
+                // Alçada de les barres
+                const hPrev = (prevYear[i] / maxVal) * (h - padding * 2);
+                const hCurr = (currYear[i] / maxVal) * (h - padding * 2);
+
+                // Barra Any Anterior (Cian)
+                ctx.fillStyle = '#06B6D4';
+                // (x, y, width, height) -> La Y comença a dalt, per tant restem l'alçada
+                ctx.fillRect(xBase, h - padding - hPrev, barWidth, hPrev);
+
+                // Barra Any Actual (Verd)
+                ctx.fillStyle = '#10B981';
+                ctx.fillRect(xBase + barWidth + 2, h - padding - hCurr, barWidth, hCurr);
+
+                // Etiquetes Q1, Q2...
+                ctx.fillStyle = '#94A3B8';
+                ctx.font = '12px system-ui';
+                ctx.textAlign = 'center';
+                ctx.fillText(labels[i], xBase + barWidth, h);
+            }
+        }
+
+        // Funció per dibuixar el gràfic circular (Mix Energètic)
+        function drawDoughnutChart() {
+            const canvas = document.getElementById('doughnutChart');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.min(centerX, centerY) - 20;
+
+            // 60% Solar, 25% Eòlica, 15% Xarxa elèctrica convencional
+            const data = [60, 25, 15];
+            const colors = ['#10B981', '#06B6D4', '#151E32'];
+
+            let total = data.reduce((a, b) => a + b, 0);
+            let startAngle = -Math.PI / 2; // Començar des de dalt (12 en punt)
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Dibuixar els arcs
+            for (let i = 0; i < data.length; i++) {
+                const sliceAngle = (data[i] / total) * 2 * Math.PI;
+
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
+                ctx.lineWidth = 25; // Grossor de l'anell
+                ctx.strokeStyle = colors[i];
+                ctx.stroke();
+
+                startAngle += sliceAngle;
+            }
+
+            // Text al centre
+            ctx.fillStyle = '#F8FAFC';
+            ctx.font = 'bold 20px system-ui';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('85%', centerX, centerY - 10);
+
+            ctx.fillStyle = '#10B981';
+            ctx.font = '12px system-ui';
+            ctx.fillText('Renovable', centerX, centerY + 10);
+        }
+
+        // Dibuixar en carregar i en redimensionar la finestra
+        window.addEventListener('load', () => {
+            drawBarChart();
+            drawDoughnutChart();
+        });
+
+        window.addEventListener('resize', () => {
+            drawBarChart();
+            drawDoughnutChart();
+        });
+    </script>
+</body>
+
+</html>

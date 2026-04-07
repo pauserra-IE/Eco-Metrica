@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ca">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informes Sostenibles - EcoMètrica</title>
+    <style>
+        /* VARIABLES I ESTILS BASE (Els mateixos per mantenir l'estalvi i la coherència) */
+        :root {
+            --bg-color: #0B1121;
+            --panel-color: #151E32;
+            --text-color: #F8FAFC;
+            --text-muted: #94A3B8;
+            --eco-green: #10B981;
+            --eco-cyan: #06B6D4;
+            --border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* BARRA LATERAL (Sidebar) */
+        .sidebar {
+            width: 260px;
+            background-color: var(--panel-color);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 40px;
+            text-decoration: none;
+        }
+
+        .logo svg {
+            height: 40px;
+            width: auto;
+        }
+
+        .logo span {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--eco-green);
+        }
+
+        .logo span span {
+            color: var(--text-color);
+            font-weight: 300;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .nav-links li a {
+            display: block;
+            padding: 12px 15px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-links li a:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+        }
+
+        /* Enllaç Actiu */
+        .nav-links li a.active {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--eco-green);
+            border-left: 4px solid var(--eco-green);
+        }
+
+        /* CONTINGUT PRINCIPAL */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        /* LAYOUT DE LA PÀGINA (2 Columnes) */
+        .reports-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 25px;
+            align-items: start;
+        }
+
+        /* PANELLS */
+        .panel {
+            background-color: var(--panel-color);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid var(--border-color);
+        }
+
+        .panel h2 {
+            margin: 0 0 20px 0;
+            font-size: 1.2rem;
+            color: var(--eco-cyan);
+        }
+
+        /* FORMULARI GENERADOR */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .form-control:focus {
+            border-color: var(--eco-green);
+        }
+
+        .btn-generate {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--eco-green);
+            color: #0B1121;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-generate:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* LLISTA D'INFORMES GENERATS */
+        .report-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .report-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+
+        .report-card:hover {
+            border-color: var(--eco-cyan);
+            background-color: rgba(6, 182, 212, 0.05);
+        }
+
+        .report-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Icona de document SVG */
+        .doc-icon {
+            width: 32px;
+            height: 32px;
+            fill: none;
+            stroke: var(--text-muted);
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .report-card:hover .doc-icon {
+            stroke: var(--eco-cyan);
+        }
+
+        .report-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin: 0 0 5px 0;
+        }
+
+        .report-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .btn-download {
+            background: transparent;
+            border: 1px solid var(--eco-cyan);
+            color: var(--eco-cyan);
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .btn-download:hover {
+            background: var(--eco-cyan);
+            color: #0B1121;
+        }
+
+        /* Missatge d'avís Green IT */
+        .green-notice {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--eco-green);
+            border-radius: 4px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: var(--text-muted);
+        }
+
+        .green-notice strong {
+            color: var(--eco-green);
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <a href="dashboard.html" class="logo">
+            <svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+                <g transform="translate(10, 20)">
+                    <path d="M 0 60 C 0 60 0 0 30 0 C 60 0 60 60 30 60 Z" fill="#10B981" opacity="0.9" />
+                    <path d="M 30 60 A 30 30 0 1 1 60 30" fill="none" stroke="#06B6D4" stroke-width="4"
+                        stroke-linecap="round" />
+                    <path d="M 12 45 L 25 30 L 35 38 L 50 15" fill="none" stroke="#FFFFFF" stroke-width="4"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                    <circle cx="50" cy="15" r="4" fill="#FFFFFF" />
+                </g>
+                <text x="85" y="65" font-family="Arial, sans-serif" font-size="38" font-weight="800" fill="#10B981">
+                    Eco<tspan fill="#F8FAFC" font-weight="300">Mètrica</tspan>
+                </text>
+            </svg>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="dashboard.html">Resum Dashboard</a></li>
+            <li><a href="analisi.html">Anàlisi i Comparativa</a></li>
+            <li><a href="informes_sostenibles.html" class="active">Informes Sostenibles</a></li>
+            <li><a href="configuracio.html">Configuració</a></li>
+        </ul>
+        <button onclick="window.location.href='index.html'"
+            style="margin-top: auto; padding: 12px; background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 8px; cursor: pointer; transition: 0.2s;">Tancar
+            Sessió</button>
+    </aside>
+
+    <main class="main-content">
+        <header>
+            <h1>Auditoria i Informes</h1>
+            <div style="color: var(--text-muted); font-size: 0.9rem;">
+                Exportació de dades i compliment normatiu
+            </div>
+        </header>
+
+        <div class="reports-layout">
+
+            <div class="panel">
+                <h2>Generar Nou Informe</h2>
+
+                <form id="reportForm" onsubmit="generarInformeSimulat(event)">
+                    <div class="form-group">
+                        <label class="form-label">Tipus d'Informe</label>
+                        <select class="form-control" required>
+                            <option value="">Selecciona una opció...</option>
+                            <option>Resum Executiu Global</option>
+                            <option>Auditoria de Petjada de Carboni</option>
+                            <option>Eficència Energètica (PUE Data Center)</option>
+                            <option>Inventari i Gestió de RAEE</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Període de Dades</label>
+                        <select class="form-control">
+                            <option>Aquest Mes</option>
+                            <option>Trimestre Actual (Q1)</option>
+                            <option>Any Anterior (2025)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Format de Descàrrega</label>
+                        <select class="form-control" id="formatSelect">
+                            <option value="csv">Dades crues (.CSV) - Recomanat 🌿</option>
+                            <option value="pdf">Document Visual (.PDF)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-generate" id="btnSubmit">Sol·licitar Informe</button>
+                </form>
+
+                <div class="green-notice">
+                    <strong>🌿 Suggeriment Green IT:</strong> T'animem a exportar les dades en format <code>.CSV</code>.
+                    Els fitxers de text pla requereixen menys potència de càlcul del servidor per ser generats i ocupen
+                    un 90% menys d'espai d'emmagatzematge que un PDF amb gràfics, reduint la petjada de carboni digital
+                    de l'empresa.
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>Historial d'Arxius</h2>
+
+                <div class="report-list" id="reportList">
+
+                    <div class="report-card">
+                        <div class="report-info">
+                            <svg class="doc-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                            <div>
+                                <p class="report-title">Auditoria de Petjada de Carboni</p>
+                                <p class="report-meta">Generat el 24 Març 2026 • Format: PDF • 2.4 MB</p>
+                            </div>
+                        </div>
+                        <button class="btn-download" onclick="alert('Iniciant descàrrega...')">Descarregar</button>
+                    </div>
+
+                    <div class="report-card">
+                        <div class="report-info">
+                            <svg class="doc-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                            <div>
+                                <p class="report-title">Eficiència Energètica Global</p>
+                                <p class="report-meta">Generat el 01 Febrer 2026 • Format: CSV • 12 KB 🌿</p>
+                            </div>
+                        </div>
+                        <button class="btn-download" onclick="alert('Iniciant descàrrega...')">Descarregar</button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        function generarInformeSimulat(event) {
+            // Evita que la pàgina es recarregui en enviar el formulari
+            event.preventDefault();
+
+            const btn = document.getElementById('btnSubmit');
+            const originalText = btn.innerText;
+
+            // Simular procés de càrrega
+            btn.innerText = "Processant dades al servidor...";
+            btn.style.opacity = "0.7";
+
+            setTimeout(() => {
+                // Restaurar botó
+                btn.innerText = originalText;
+                btn.style.opacity = "1";
+
+                // Mostrar alerta d'èxit
+                alert("L'informe s'ha generat correctament i s'ha afegit a l'historial (Simulació).");
+
+                // Netejar el formulari
+                document.getElementById('reportForm').reset();
+            }, 1500); // Triga 1.5 segons a simular la creació
+        }
+    </script>
+</body>
+
+</html>
